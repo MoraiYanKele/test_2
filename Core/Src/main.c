@@ -90,6 +90,17 @@ uint8_t graySensorReadData_Parallel()
   return ret; 
 }
 
+void decimalToBinary(uint8_t n, uint8_t* n_arr)
+{
+   
+    for(int i = 0; i < 8; i++)
+    {
+        n_arr[7 - i] = n % 2;
+        n = n / 2;
+    }
+
+    printf("\n");
+}
 // void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 // {
 //   printf("in tim it\n");
@@ -144,7 +155,7 @@ int main(void)
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim2);
-    
+  uint8_t grayData_arr[8]; 
 
   
   /* USER CODE END 2 */
@@ -155,11 +166,11 @@ int main(void)
   while (1)
   {
     grayData = graySensorReadData_Parallel();
-    for (int i = 0; i < 8; i++)
+    decimalToBinary(grayData, grayData_arr);
+    for(int i = 0; i < 8; i++)
     {
-      printf("%d", (grayData & (1 << i)));
-    }    
-    printf("\n");
+      printf("%d", grayData_arr[i]);
+    }
     HAL_Delay(1000);
     
     /* USER CODE END WHILE */
