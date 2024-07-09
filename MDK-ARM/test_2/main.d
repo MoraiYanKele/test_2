@@ -30,7 +30,7 @@ test_2/main.o: ..\Core\Src\main.c ..\Core\Inc\main.h \
   ..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_tim_ex.h \
   ..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_uart.h \
   ..\Core\Inc\dma.h ..\Core\Inc\i2c.h ..\Core\Inc\tim.h \
-  ..\Core\Inc\usart.h ..\Core\Inc\gpio.h \
+  ..\Core\Inc\usart.h ..\Core\Inc\gpio.h ..\Core\Inc\sw_i2c.h \
+  ..\Core\Inc\gw_grayscale_sensor.h ..\Core\Inc\DELAY.h \
   D:\stm32\ARM\ARMCLANG\include\stdio.h \
-  D:\stm32\ARM\ARMCLANG\include\string.h ..\Core\Inc\grayscale_sensor.h \
-  ..\Core\Inc\DELAY.h
+  D:\stm32\ARM\ARMCLANG\include\string.h ..\Core\Inc\grayscale_sensor.h

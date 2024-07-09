@@ -26,7 +26,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "sw_i2c.h"
 #include <stdio.h>
 #include <string.h>
 #include "grayscale_sensor.h"
@@ -41,8 +41,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define GRAY_GPIO_CLK GPIO_PIN_7
-#define GRAY_GPIO_DAT GPIO_PIN_6
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -124,6 +123,7 @@ void decimalToBinary(uint8_t n, uint8_t* n_arr)
   */
 int main(void)
 {
+  
 
   /* USER CODE BEGIN 1 */
 
@@ -135,7 +135,9 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
+  volatile uint8_t count;
+  uint8_t scan_addr[128];
+  uint8_t gray_sensor[8];
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -154,10 +156,18 @@ int main(void)
   MX_TIM2_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
+  SWIIC_GPIO_Init();
   HAL_TIM_Base_Start_IT(&htim2);
-  uint8_t grayData_arr[8]; 
-
-  
+  DWT_Init();	
+  sw_i2c_interface_t i2c_interface =
+  {
+    .sda_in = sda_in,
+    .scl_out = scl_out,
+    .sda_out = sda_out,
+    .user_data = 0, //用户数据，可在输入输出函数里得到
+  };
+  count = i2c_scan(&i2c_interface, scan_addr);
+  sw_i2c_write_byte(&i2c_interface, 0x4C << 1, GW_GRAY_DIGITAL_MODE);	
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -165,12 +175,18 @@ int main(void)
   printf("ready\n");
   while (1)
   {
-    grayData = graySensorReadData_Parallel();
-    decimalToBinary(grayData, grayData_arr);
+    // grayData = graySensorReadData_Parallel();
+    // decimalToBinary(grayData, grayData_arr);
+    // for(int i = 0; i < 8; i++)
+    // {
+    //   printf("%d", grayData_arr[i]);
+    // }
+    Digital_Dataget(&i2c_interface, gray_sensor);
     for(int i = 0; i < 8; i++)
     {
-      printf("%d", grayData_arr[i]);
+      printf("%d", gray_sensor[i]);
     }
+    printf("\n");
     HAL_Delay(1000);
     
     /* USER CODE END WHILE */

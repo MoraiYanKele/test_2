@@ -36,7 +36,7 @@
 #define I2C_WRITE 0x0
 
 /* 模拟模式数据改成0, 开关模式数据改成1 */
-#define GW_READ_DIGITAL_DATA 0
+#define GW_READ_DIGITAL_DATA 1
 
 typedef struct {
 	void (*sda_out)(uint8_t BIT, void *user_data);
