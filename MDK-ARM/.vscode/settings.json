@@ -1,0 +1,15 @@
+{
+    "files.associations": {
+        "printf.h": "c",
+        "grayscale_sensor.h": "c",
+        "sw_i2c.h": "c",
+        "delay.h": "c",
+        "main.h": "c",
+        "stdint.h": "c",
+        "gw_grayscale_sensor.h": "c",
+        "i2c.h": "c",
+        "tim.h": "c",
+        "dma.h": "c",
+        "stm32f1xx_hal.h": "c"
+    }
+}
