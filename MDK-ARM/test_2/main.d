@@ -33,4 +33,4 @@ test_2/main.o: ..\Core\Src\main.c ..\Core\Inc\main.h \
   ..\Core\Inc\usart.h ..\Core\Inc\gpio.h ..\Core\Inc\sw_i2c.h \
   ..\Core\Inc\gw_grayscale_sensor.h ..\Core\Inc\DELAY.h \
   D:\stm32\ARM\ARMCLANG\include\stdio.h \
-  D:\stm32\ARM\ARMCLANG\include\string.h ..\Core\Inc\grayscale_sensor.h
+  D:\stm32\ARM\ARMCLANG\include\string.h

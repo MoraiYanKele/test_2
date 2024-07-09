@@ -29,14 +29,18 @@
 #include "sw_i2c.h"
 #include <stdio.h>
 #include <string.h>
-#include "grayscale_sensor.h"
-#include "DELAY.h"
 
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+sw_i2c_interface_t i2c_interface =
+  {
+    .sda_in = sda_in,
+    .scl_out = scl_out,
+    .sda_out = sda_out,
+    .user_data = 0, //用户数据，可在输入输出函数里得到
+  };
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -53,10 +57,13 @@
 
 /* USER CODE BEGIN PV */
 
-// 灰度传感器状态：  0 ping网络诊断; 1 初始状态，发送测量命令;             
-//                2 正在发送测量命令; 3 测量命令发送完成，接收数据; 
-uint8_t graySensor_state = 0;
-uint8_t grayData;
+// 灰度传感器状态：  0 ping网络诊断; 1 初始状�?�，发�?�测量命�??;             
+//                2 正在发�?�测量命�??; 3 测量命令发�?�完成，接收数据; 
+// uint8_t graySensor_state = 0;
+// uint8_t grayData;
+volatile uint8_t count;
+uint8_t scan_addr[128];
+uint8_t gray_sensor[8];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -74,41 +81,36 @@ int fgetc(FILE *f)
   return ch;
 }
 
-uint8_t graySensorReadData_Parallel()
-{
-  uint8_t ret;
-  ret |= HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_2) << 0; 
-  ret |= HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_0) << 1;
-  ret |= HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_11) << 2;
-  ret |= HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_4) << 3;
-  ret |= HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_15) << 4;
-  ret |= HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_1) << 5;
-  ret |= HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_8) << 6;
-  ret |= HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_10) << 7;
-  HAL_Delay(1);
-  return ret; 
-}
-
-void decimalToBinary(uint8_t n, uint8_t* n_arr)
-{
-   
-    for(int i = 0; i < 8; i++)
-    {
-        n_arr[7 - i] = n % 2;
-        n = n / 2;
-    }
-
-    printf("\n");
-}
-// void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+// uint8_t graySensorReadData_Parallel()
 // {
-//   printf("in tim it\n");
-//   static uint32_t timCounter = 0;
-//   if  (htim == &htim2)
-//   {
-//     printf("%#X", graySensorReadData());
-//   }
+//   uint8_t ret;
+//   ret |= HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_2) << 0; 
+//   ret |= HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_0) << 1;
+//   ret |= HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_11) << 2;
+//   ret |= HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_4) << 3;
+//   ret |= HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_15) << 4;
+//   ret |= HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_1) << 5;
+//   ret |= HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_8) << 6;
+//   ret |= HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_10) << 7;
+//   HAL_Delay(1);
+//   return ret; 
 // }
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{ 
+  static int32_t timConter = 0;
+  timConter++;
+  if (htim == &htim2 && timConter >= 500)
+  {
+    Digital_Dataget(&i2c_interface, gray_sensor);
+    for (int i = 0; i < 8; i++)
+    {
+      printf("%d", gray_sensor[i]);
+    }
+    printf("\n");
+    timConter = 0;
+  }
+}
 
 /* USER CODE END PFP */
 
@@ -123,7 +125,6 @@ void decimalToBinary(uint8_t n, uint8_t* n_arr)
   */
 int main(void)
 {
-  
 
   /* USER CODE BEGIN 1 */
 
@@ -135,9 +136,7 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-  volatile uint8_t count;
-  uint8_t scan_addr[128];
-  uint8_t gray_sensor[8];
+  
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -159,15 +158,10 @@ int main(void)
   SWIIC_GPIO_Init();
   HAL_TIM_Base_Start_IT(&htim2);
   DWT_Init();	
-  sw_i2c_interface_t i2c_interface =
-  {
-    .sda_in = sda_in,
-    .scl_out = scl_out,
-    .sda_out = sda_out,
-    .user_data = 0, //用户数据，可在输入输出函数里得到
-  };
-  count = i2c_scan(&i2c_interface, scan_addr);
-  sw_i2c_write_byte(&i2c_interface, 0x4C << 1, GW_GRAY_DIGITAL_MODE);	
+
+  
+
+  	
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -175,19 +169,8 @@ int main(void)
   printf("ready\n");
   while (1)
   {
-    // grayData = graySensorReadData_Parallel();
-    // decimalToBinary(grayData, grayData_arr);
-    // for(int i = 0; i < 8; i++)
-    // {
-    //   printf("%d", grayData_arr[i]);
-    // }
-    Digital_Dataget(&i2c_interface, gray_sensor);
-    for(int i = 0; i < 8; i++)
-    {
-      printf("%d", gray_sensor[i]);
-    }
-    printf("\n");
-    HAL_Delay(1000);
+    
+    
     
     /* USER CODE END WHILE */
 
