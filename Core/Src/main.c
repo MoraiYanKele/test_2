@@ -75,21 +75,20 @@ int fgetc(FILE *f)
   return ch;
 }
 
-// uint8_t graySensorReadData_Parallel()
-// {
-//   uint8_t ret;
-//   ret |= HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_2) << 0; 
-//   ret |= HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_0) << 1;
-//   ret |= HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_11) << 2;
-//   ret |= HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_4) << 3;
-//   ret |= HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_15) << 4;
-//   ret |= HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_1) << 5;
-//   ret |= HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_8) << 6;
-//   ret |= HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_10) << 7;
-//   HAL_Delay(1);
-//   return ret;
-  
-// }
+uint8_t graySensorReadData_Parallel()
+{
+  uint8_t ret;
+  ret |= HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_2) << 0; 
+  ret |= HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_0) << 1;
+  ret |= HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_11) << 2;
+  ret |= HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_4) << 3;
+  ret |= HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_15) << 4;
+  ret |= HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_1) << 5;
+  ret |= HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_8) << 6;
+  ret |= HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_10) << 7;
+  HAL_Delay(1);
+  return ret; 
+}
 
 // void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 // {
@@ -145,10 +144,9 @@ int main(void)
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim2);
- 
+    
 
-  // count = i2c_scan(&i2c_interface, scan_addr);
-  // sw_i2c_write_byte(&i2c_interface, 0x4C << 1, GW_GRAY_DIGITAL_MODE);
+  
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -156,32 +154,14 @@ int main(void)
   printf("ready\n");
   while (1)
   {
+    grayData = graySensorReadData_Parallel();
+    for (int i = 0; i < 8; i++)
+    {
+      printf("%d", (grayData & (1 << i)));
+    }    
+    printf("\n");
+    HAL_Delay(1000);
     
-    // if(graySensor_state == 0)
-    // {
-      // Ping();
-    //   graySensor_state = 1;
-    // }
-    // else if(graySensor_state == 1)
-    // {
-    //   // Graysensor_SendOrder(GRAYSENSOR_READDATA);
-    //   graySensor_state = 3;
-    // }
-    // else if(graySensor_state == 3)
-    // {
-    //   Graysensor_ReadData(&grayData);
-    //   graySensor_state = 0;
-    // }
-    HAL_I2C_Master_Receive(&hi2c1, GRAYSENSOR_ADDRESS, &grayData, 1, HAL_MAX_DELAY);
-  
-    // for (int i = 0; i < 8; i++)
-    // {
-    //   printf("%d", gray_sensor_data[i]);
-    // }
-    printf("%d", grayData);
-    // printf("\n");
-    HAL_Delay(100);
-    // printf("%d\n",HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_10));
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
