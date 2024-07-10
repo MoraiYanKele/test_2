@@ -32,23 +32,23 @@ float GetSpeed(short encoder)
   return speed;
 }
 
-void MotoPID_Init(Moto_PIDController* pid, float Kp, float Ki, float Kd, float setpoint)
+void MotoPID_Init(Moto_PIDController* pid, float Kp, float Ki, float Kd)
 {
   pid->Kp = Kp;
   pid->Ki = Ki;
   pid->Kd = Kd;
-  pid->setpoint = setpoint;
+  // pid->setpoint = setpoint;
   pid->integral = 0;
   pid->previous_error = 0;
   pid->error = 0;
   pid->derivative = 0;
 }
 
-float Moto_LeftPID(Moto_PIDController* pid_Left, float now_LeftValue)
+float Moto_LeftPID(Moto_PIDController* pid_Left, float now_LeftValue, float target_LeftValue)
 {
   float output;
 
-  pid_Left->error = pid_Left->setpoint - now_LeftValue;
+  pid_Left->error = target_LeftValue - now_LeftValue;
   pid_Left->integral += pid_Left->error;
   pid_Left->derivative = pid_Left->error - pid_Left->previous_error;
   output = pid_Left->Kp * pid_Left->error + pid_Left->Ki * pid_Left->integral + pid_Left->Kd * pid_Left->derivative;
@@ -57,11 +57,11 @@ float Moto_LeftPID(Moto_PIDController* pid_Left, float now_LeftValue)
   return output; 
 }
 
-float Moto_RightPID(Moto_PIDController* pid_Right, float now_RightValue)
+float Moto_RightPID(Moto_PIDController* pid_Right, float now_RightValue, float target_rightValue)
 {
   float output;
 
-  pid_Right->error = pid_Right->setpoint - now_RightValue;
+  pid_Right->error = target_rightValue - now_RightValue;
   pid_Right->integral += pid_Right->error;
   pid_Right->derivative = pid_Right->error - pid_Right->previous_error;
   output = pid_Right->Kp * pid_Right->error + pid_Right->Ki * pid_Right->integral + pid_Right->Kd * pid_Right->derivative;

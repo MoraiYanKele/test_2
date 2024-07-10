@@ -12,6 +12,25 @@
         "dma.h": "c",
         "stm32f1xx_hal.h": "c",
         "moto.h": "c",
-        "__locale": "c"
+        "__locale": "c",
+        "optional": "c",
+        "istream": "c",
+        "ostream": "c",
+        "ratio": "c",
+        "system_error": "c",
+        "array": "c",
+        "functional": "c",
+        "tuple": "c",
+        "type_traits": "c",
+        "utility": "c",
+        "variant": "c",
+        "__bit_reference": "c",
+        "__node_handle": "c",
+        "bitset": "c",
+        "deque": "c",
+        "__memory": "c",
+        "limits": "c",
+        "locale": "c",
+        "vector": "c"
     }
 }
