@@ -3,6 +3,7 @@
 "test_2\grayscale_sensor.o"
 "test_2\delay.o"
 "test_2\sw_i2c.o"
+"test_2\moto.o"
 "test_2\main.o"
 "test_2\gpio.o"
 "test_2\dma.o"

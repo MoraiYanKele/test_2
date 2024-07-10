@@ -27,6 +27,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "sw_i2c.h"
+#include "Moto.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -57,13 +58,14 @@ sw_i2c_interface_t i2c_interface =
 
 /* USER CODE BEGIN PV */
 
-// 灰度传感器状态：  0 ping网络诊断; 1 初始状�?�，发�?�测量命�??;             
-//                2 正在发�?�测量命�??; 3 测量命令发�?�完成，接收数据; 
+// 灰度传感器状态：  0 ping网络诊断; 1 初始状�?�，发�?�测量命�??????;             
+//                2 正在发�?�测量命�??????; 3 测量命令发�?�完成，接收数据; 
 // uint8_t graySensor_state = 0;
 // uint8_t grayData;
 volatile uint8_t count;
 uint8_t scan_addr[128];
 uint8_t gray_sensor[8];
+// short encoder = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -96,21 +98,29 @@ int fgetc(FILE *f)
 //   return ret; 
 // }
 
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{ 
-  static int32_t timConter = 0;
-  timConter++;
-  if (htim == &htim2 && timConter >= 500)
-  {
-    Digital_Dataget(&i2c_interface, gray_sensor);
-    for (int i = 0; i < 8; i++)
-    {
-      printf("%d", gray_sensor[i]);
-    }
-    printf("\n");
-    timConter = 0;
-  }
-}
+// void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+// { 
+//   static int32_t timConter = 0;
+//   timConter++;
+//   if (htim == &htim2 && timConter >= 500)
+//   {
+//     Digital_Dataget(&i2c_interface, gray_sensor);
+//     for (int i = 0; i < 8; i++)
+//     {
+//       printf("%d", gray_sensor[i]);
+//     }
+//     printf("\n");
+//     timConter = 0;
+//   }
+// }
+
+// short GetEncoder()
+// {
+//   short encoder = 0;
+//   encoder = (short)(__HAL_TIM_GET_COUNTER(&htim1));
+//   __HAL_TIM_SET_COUNTER(&htim1, 0);
+//   return encoder;
+// }
 
 /* USER CODE END PFP */
 
@@ -143,8 +153,7 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-  // SWIIC_GPIO_Init();			
-  // DWT_Init();	
+  
     
   /* USER CODE END SysInit */
 
@@ -154,14 +163,18 @@ int main(void)
   MX_USART1_UART_Init();
   MX_TIM2_Init();
   MX_I2C1_Init();
+  MX_TIM1_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
+
   SWIIC_GPIO_Init();
-  HAL_TIM_Base_Start_IT(&htim2);
   DWT_Init();	
-
-  
-
-  	
+  HAL_TIM_Base_Start_IT(&htim2);
+  HAL_TIM_Encoder_Start(&htim1, TIM_CHANNEL_1);
+  HAL_TIM_Encoder_Start(&htim1, TIM_CHANNEL_2);
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
+	
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -169,7 +182,8 @@ int main(void)
   printf("ready\n");
   while (1)
   {
-    
+    printf("%hd, %f\n", GetEncoder(), GetSpeed(GetEncoder()));
+    HAL_Delay(10);
     
     
     /* USER CODE END WHILE */
