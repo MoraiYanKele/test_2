@@ -153,7 +153,8 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-  
+  Moto_PIDController pid_Left;
+  Moto_PIDController pid_Right;
     
   /* USER CODE END SysInit */
 
@@ -174,6 +175,8 @@ int main(void)
   HAL_TIM_Encoder_Start(&htim1, TIM_CHANNEL_2);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
+
+  
 	
   /* USER CODE END 2 */
 
