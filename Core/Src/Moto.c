@@ -11,11 +11,11 @@
 // } Moto_PIDController;
 
 
-short GetEncoder(void)
+short GetEncoder(TIM_HandleTypeDef* htim)
 {
   short encoder = 0;
-  encoder = (short)(__HAL_TIM_GET_COUNTER(&htim1));
-  __HAL_TIM_SET_COUNTER(&htim1, 0);
+  encoder = (short)(__HAL_TIM_GET_COUNTER(htim));
+  __HAL_TIM_SET_COUNTER(htim, 0);
   return encoder;
 }
 
