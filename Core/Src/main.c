@@ -177,7 +177,10 @@ int main(void)
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
 
   
-	
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_2, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_RESET);
+  
+  MotoDriver(500);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -185,7 +188,7 @@ int main(void)
   printf("ready\n");
   while (1)
   {
-    printf("%hd, %f\n", GetEncoder(), GetSpeed(GetEncoder()));
+    printf("%d, %d, %hd\n", TIM3->CCR1, TIM3->CCR2, GetEncoder());
     HAL_Delay(10);
     
     

@@ -21,8 +21,8 @@ short GetEncoder(void)
 
 void MotoDriver(uint32_t speed)
 {
-  TIM2->CCR1 = speed;
-  TIM2->CCR2 = 1000 - speed; 
+  TIM3->CCR1 = speed;
+  TIM3->CCR2 = 1000 - speed; 
 }
 
 float GetSpeed(short encoder)
