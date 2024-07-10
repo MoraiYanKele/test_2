@@ -68,8 +68,8 @@ volatile uint8_t count;
 uint8_t scan_addr[128];
 uint8_t gray_sensor[8];
 
-// 串口接收数据�??'a' openmv接收到单片机命令，正在应答；'fx' openmv在开始阶段识别的数据，x为目标房间号�??
-//             'dxx' openmv在寻找房间时识别的数据，xx为转向命令，l左转，r右转，s直走(只转向一次发x0)�?? 
+// 串口接收数据�?????'a' openmv接收到单片机命令，正在应答；'fx' openmv在开始阶段识别的数据，x为目标房间号�?????
+//             'dxx' openmv在寻找房间时识别的数据，xx为转向命令，l左转，r右转，s直走(只转向一次发x0)�????? 
 uint8_t uartRxBuffer[10]; 
 short encoderLeft, encoderRight;
 // short encoder = 0;
@@ -139,31 +139,32 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 }
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{ 
+{
   static int32_t timConter = 0;
   timConter++;
-  if (htim == &htim2 && (timConter % 10 == 0))
+  if (htim->Instance == TIM2)
   {
-    encoderRight = GetEncoder(RIGHT_ENCODER_TIM);
-    encoderLeft = GetEncoder(LEFT_ENCODER_TIM);
-    // printf("%hd, %hd, %d, %d\n",GetEncoder(LEFT_ENCODER_TIM), GetEncoder(RIGHT_ENCODER_TIM), LEFT_PWM, RIGHT_PWM);
-
-    // LEFT_PWM = Moto_LeftPID(pid_Left, encoderRight, )
-  }
-
-  if (htim == &htim2 && timConter >= 500)
-  {
-    printf("wodeshijie");
-    Digital_Dataget(&i2c_interface, gray_sensor);
     
-    for (int i = 0; i < 8; i++)
+    if (timConter % 10 == 0)
     {
-      printf("%d", gray_sensor[i]);
+      
+      encoderRight = GetEncoder(RIGHT_ENCODER_TIM);
+      encoderLeft = GetEncoder(LEFT_ENCODER_TIM);
+      printf("%hd, %hd\n", encoderRight, encoderLeft);
     }
-    printf("\n");
-    timConter = 0;
-  }
-  
+    if (timConter >= 500)
+    {
+      Digital_Dataget(&i2c_interface, gray_sensor);
+    
+      // for (int i = 0; i < 8; i++)
+      // {
+      //   printf("%d", gray_sensor[i]);
+      // }
+      printf("\n");
+      timConter = 0;
+    }
+
+  } 
 }
 
 
@@ -183,7 +184,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
+  
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -192,13 +193,13 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-  sw_i2c_interface_t i2c_interface =
-  {
-    .sda_in = sda_in,
-    .scl_out = scl_out,
-    .sda_out = sda_out,
-    .user_data = 0, //用户数据，可在输入输出函数里得到
-  };
+  // sw_i2c_interface_t i2c_interface =
+  // {
+  //   .sda_in = sda_in,
+  //   .scl_out = scl_out,
+  //   .sda_out = sda_out,
+  //   .user_data = 0, //用户数据，可在输入输出函数里得到
+  // };
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -219,10 +220,12 @@ int main(void)
   MX_TIM3_Init();
   MX_TIM4_Init();
   MX_USART2_UART_Init();
+  MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
 
   SWIIC_GPIO_Init();
   DWT_Init();	
+
   HAL_TIM_Base_Start_IT(&htim2);
 
   HAL_TIM_Encoder_Start(&htim1, TIM_CHANNEL_1);
@@ -240,6 +243,7 @@ int main(void)
 
   // MotoPID_Init(&pid_Left, 0.1, 0.1, 0.1);
   // MotoPID_Init(&pid_Right, 0.1, 0.1, 0.1);
+ 	
 
 	HAL_GPIO_WritePin(RIGHT_IN_PORT, RIGHT_IN1, GPIO_PIN_RESET);
   HAL_GPIO_WritePin(RIGHT_IN_PORT, RIGHT_IN2, GPIO_PIN_SET);
@@ -257,12 +261,14 @@ int main(void)
   while (1)
   {
     
+    // Digital_Dataget(&i2c_interface, gray_sensor);
+    
     // for (int i = 0; i < 8; i++)
     // {
     //   printf("%d", gray_sensor[i]);
     // }
     // printf("\n");
-    // HAL_Delay(100);
+    // HAL_Delay(500);
     
     /* USER CODE END WHILE */
 
